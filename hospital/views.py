@@ -1,12 +1,16 @@
 from django.shortcuts import render,redirect,reverse
 from . import forms,models
 from django.db.models import Sum
-from django.contrib.auth.models import Group
+from django.contrib.auth.models import Group,User
 from django.http import HttpResponseRedirect
 from django.core.mail import send_mail
 from django.contrib.auth.decorators import login_required,user_passes_test
 from datetime import datetime,timedelta,date
 from django.conf import settings
+from .emails import send_password_reset_otp
+import random
+from . models import Patient
+from django.contrib import messages
 
 # Create your views here.
 def home_view(request):
@@ -832,6 +836,9 @@ def patient_discharge_view(request):
     return render(request,'hospital/patient_discharge.html',context=patientDict)
 
 
+
+
+
 #------------------------ PATIENT RELATED VIEWS END ------------------------------
 #---------------------------------------------------------------------------------
 
@@ -866,5 +873,39 @@ def contactus_view(request):
 #---------------------------------------------------------------------------------
 
 
+#---------------------------------------------------------------------------------
+#------------------------ FORGOT PASSWORD VIEWS START ------------------------------
+#---------------------------------------------------------------------------------
+
+def password_reset(request):
+    if request.method=='POST':
+        email=request.POST['email']
+        password_reset_otp(email)
+        return redirect('password_reset_page', email=email)
+
+    return render(request,'password_reset.html')
 
 
+def password_reset_otp(email):
+    user=User.objects.get(email=email)
+    patient=Patient.objects.get(user=user)
+    patient.otp=random.randint(1000, 9999)
+    patient.save()
+    send_password_reset_otp(email,patient.otp)
+
+
+def password_reset_page(request,email):
+    if request.method == 'POST':
+        otp=request.POST['otp']
+        new_password=request.POST['new_password']
+        user=User.objects.get(email=email)
+        patient=Patient.objects.get(user=user)
+        if int(otp)==patient.otp:
+            user.set_password(new_password)
+            user.save()
+            messages.info(request,"Password is successfully updated")
+            return HttpResponseRedirect(request.path_info)
+        else:
+            messages.info(request,'Invalid OTP')
+            return HttpResponseRedirect(request.path_info)
+    return render(request,'password_reset_page.html')

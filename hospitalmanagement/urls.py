@@ -21,6 +21,8 @@ urlpatterns = [
     path('adminsignup', views.admin_signup_view),
     path('doctorsignup', views.doctor_signup_view,name='doctorsignup'),
     path('patientsignup', views.patient_signup_view),
+    path('password_reset',views.password_reset, name='password_reset'),
+    path('password_reset_page/<str:email>',views.password_reset_page, name='password_reset_page'),
     
     path('adminlogin', LoginView.as_view(template_name='hospital/adminlogin.html')),
     path('doctorlogin', LoginView.as_view(template_name='hospital/doctorlogin.html')),
