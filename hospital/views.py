@@ -1,4 +1,4 @@
-from django.shortcuts import render,redirect,reverse
+from django.shortcuts import render,redirect,reverse,get_object_or_404
 from . import forms,models
 from django.db.models import Sum
 from django.contrib.auth.models import Group,User
@@ -880,18 +880,24 @@ def contactus_view(request):
 def password_reset(request):
     if request.method=='POST':
         email=request.POST['email']
-        password_reset_otp(email)
+        if email=="":
+            messages.info(request,"Please enter your email address")
+            return HttpResponseRedirect(request.path_info)
+        else:
+            password_reset_otp(email)
+            messages.info(request,"Check your mail for OTP")
         return redirect('password_reset_page', email=email)
 
     return render(request,'password_reset.html')
 
 
 def password_reset_otp(email):
-    user=User.objects.get(email=email)
+    user=get_object_or_404(User,email=email)
     patient=Patient.objects.get(user=user)
     patient.otp=random.randint(1000, 9999)
     patient.save()
     send_password_reset_otp(email,patient.otp)
+    
 
 
 def password_reset_page(request,email):
