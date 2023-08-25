@@ -697,6 +697,7 @@ def patient_dashboard_view(request):
     'symptoms':patient.symptoms,
     'doctorDepartment':doctor.department,
     'admitDate':patient.admitDate,
+    'prescription':patient.prescription,
     }
     return render(request,'hospital/patient_dashboard.html',context=mydict)
 
@@ -915,3 +916,17 @@ def password_reset_page(request,email):
             messages.info(request,'Invalid OTP')
             return HttpResponseRedirect(request.path_info)
     return render(request,'password_reset_page.html')
+
+
+def prescribe(request,id):
+    patient=Patient.objects.get(id=id)
+    context={
+        'patient':patient
+    }
+
+    if request.method == 'POST':
+        prescription=request.POST['prescription']
+        patient.prescription=prescription
+        patient.save()
+    return render(request,'hospital/prescribe.html',context)
+

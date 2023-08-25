@@ -38,6 +38,7 @@ class Patient(models.Model):
     admitDate=models.DateField(auto_now=True)
     status=models.BooleanField(default=False)
     otp=models.IntegerField(null=True,blank=True)
+    prescription=models.CharField(max_length=5000,null=True,blank=True)
     
     @property
     def get_name(self):

@@ -1,0 +1,63 @@
+{% extends 'hospital/doctor_base.html' %}
+{% block content %}
+{%load static%}
+
+<head>
+  <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+  <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+  <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+
+  <style media="screen">
+    a:link {
+      text-decoration: none;
+    }
+
+    h6 {
+      text-align: center;
+    }
+
+    .row {
+      margin: 100px;
+    }
+
+    #buttonEdit{
+        border-radius: 5px;
+        background-color: #0C90C3;
+        color: white;
+        width: 100px;
+        height: 40px;
+        margin-top: 10px;
+    }
+
+  </style>
+</head>
+
+<div class="container">
+  <div class="panel panel-primary">
+    <div class="panel-heading">
+      <h6 class="panel-title">Patient -> {{patient.user.first_name}}</h6>
+    </div>
+    <table class="table table-hover" id="dev-table">
+      <thead>
+        <tr>
+          <th colspan="6" style="text-align: center;">
+            <form method="post">
+                {%csrf_token %}
+                <textarea class="form-control" name="prescription" placeholder="Prescribe Medicine" rows="4" cols="50"></textarea><br>
+                <button id="buttonEdit" type="submit">Submit</button>
+            </form>
+          </th>
+        </tr>
+      </thead>
+    </table>
+    {% if patient.prescription %}
+    <div class="panel-heading" style="margin-top: 50px; background-color: red; height:auto;">
+        <h6 class="panel-title">Prescribed</h6>
+        <h6 class="panel-title">{{patient.prescription}}</h6>
+      </div>
+      {% endif %}
+  </div>
+</div>
+
+
+{% endblock content %}
